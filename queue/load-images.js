@@ -14,21 +14,35 @@ SC.loadImages = (() => {
   function loadImages(urls) {
     let rejectPromise;
     const startTime = Date.now();
-    const imageDeferreds = urls.map(loadImage);
-
+    const batchSize = 10;
     log(`Starting to load ${urls.length} images`);
 
     const imagesPromise = new Promise((resolve, reject) => {
-      rejectPromise = () => {
-        imageDeferreds.forEach(imagePromise => imagePromise.abort());
-        reject();
-      }
+        let imageDeferreds = [];
+        rejectPromise = () => {
+            imageDeferreds.forEach(imagePromise => imagePromise.abort());
+            reject();
+        }
 
-      Promise.all(imageDeferreds.map(({ promise }) => promise))
-        .then((images) => {
-          // pick out the Image elements from the resolution values of each
-          // promise, and resolve the overall promise with these images.
-          resolve(images.filter(Boolean));
+        const batches = urls.reduce((acc, item, idx, orgArray) => {
+            if (idx % batchSize === 0 || idx === 0) {
+                 acc.push([]);
+            }
+            acc[acc.length - 1].push(item);
+            return acc;
+        }, [], 0, urls);
+
+        batches.reduce((promiseChain, currentBatch) => {
+            const imageDeferreds = currentBatch.map(loadImage);
+//            imageDeferreds.push(currentDeferreds);
+            return promiseChain.then(chainResults => {
+                    return Promise.all(imageDeferreds.map(({ promise }) => promise))
+                        .then(currentResult => [ ...chainResults, currentResult ])
+                    }
+               );
+            }, Promise.resolve([])
+        ).then(images => {
+            resolve(images.flat().filter(Boolean));
         });
     });
 
@@ -65,7 +79,6 @@ SC.loadImages = (() => {
         img.src = '';
         reject();
       }
-
       img.onload = () => { resolve(img) };
 
       // no img means it failed, but that's okay, we just won't draw it.
