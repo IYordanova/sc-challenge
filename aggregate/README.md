@@ -86,3 +86,5 @@ A larger data set is provided in `sample-data.json`.
 - The solution will be judged on correctness, clarity and efficiency.
 - Please include some tests which can be run to validate your solution.
 - We expect this should take roughly one hour.
+
+### You can run npm test to run the tests for the aggregate task
