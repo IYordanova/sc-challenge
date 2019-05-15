@@ -20,7 +20,7 @@ SC.loadImages = (() => {
     const imagesPromise = new Promise((resolve, reject) => {
         let imageDeferreds = [];
         rejectPromise = () => {
-            imageDeferreds.forEach(imagePromise => imagePromise.abort());
+            imageDeferreds.flat().forEach(imagePromise => imagePromise.abort());
             reject();
         }
 
@@ -33,10 +33,10 @@ SC.loadImages = (() => {
         }, [], 0, urls);
 
         batches.reduce((promiseChain, currentBatch) => {
-            const imageDeferreds = currentBatch.map(loadImage);
-//            imageDeferreds.push(currentDeferreds);
             return promiseChain.then(chainResults => {
-                    return Promise.all(imageDeferreds.map(({ promise }) => promise))
+                    const currentImageDeferreds = currentBatch.map(loadImage);
+                    imageDeferreds.push(currentImageDeferreds)
+                    return Promise.all(currentImageDeferreds.map(({ promise }) => promise))
                         .then(currentResult => [ ...chainResults, currentResult ])
                     }
                );
