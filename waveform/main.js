@@ -32,5 +32,4 @@
     shortSoundPlayButton.classList.toggle('sc-button-play');
     shortSoundPlayButton.classList.toggle('sc-button-pause');
   });
-
 })();

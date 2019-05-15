@@ -29,7 +29,6 @@
 
   // draw the given array of images onto the waveform
   function showImages(images) {
-    console.log(images)
     images.forEach((img) => { ctx.drawImage(img, Math.random() * 625, 40); });
   }
 

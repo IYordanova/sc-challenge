@@ -18,3 +18,9 @@ After getting the updating to be silky smooth, as an added bonus, you may implem
 
 - In addition to fixing our terrible waveform, please include notes (simple bullet points would be fine) highlighting what issues you discovered, and the steps or browser tools you used to identify them.
 - We expect this should take roughly one hour.
+
+### Notes on the solution:
+
+- One of the obvious problems with the code was the fact that the whole canvas was redrawn on each update
+- Another issue was the way it was drawn - each Rectangle representing unit of time in the wave was drawn essentially pixel by pixel instead of all at once
+- Small wins are also moving a few statements and computations out of the loop as they don't depend on the changing index
